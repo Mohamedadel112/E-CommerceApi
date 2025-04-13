@@ -1,9 +1,14 @@
+﻿
+using Domain.Contracts;
+using Microsoft.EntityFrameworkCore;
+using Presistance.Data;
+using Presistance.Data.DataSeed;
 
-namespace E_CommerceProjectApi
+namespace E_CommerceprojectApi
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +18,14 @@ namespace E_CommerceProjectApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+            builder.Services.AddScoped<IDbInitializer, DbInitialize>();
 
             var app = builder.Build();
-
+            await InitializeDbAsync(app);
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -31,6 +41,22 @@ namespace E_CommerceProjectApi
             app.MapControllers();
 
             app.Run();
+
+            async Task InitializeDbAsync(WebApplication web)
+            {
+                using var scope = web.Services.CreateScope();
+                try
+                {
+                    var initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                    await initializer.InitializeAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("🔥 Error in DB Initialization: " + ex.Message);
+                    Console.WriteLine("🧠 StackTrace: " + ex.StackTrace);
+                    // يمكنك أيضًا عمل Log هنا أو إعادة رمي الاستثناء
+                }
+            }
         }
     }
 }
