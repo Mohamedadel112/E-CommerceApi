@@ -3,6 +3,10 @@ using Domain.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Presistance.Data;
 using Presistance.Data.DataSeed;
+using Presistance.Data.Repositories;
+using Servicies;
+using Servicies.Mapping_Profile;
+using ServiciesApstraction;
 
 namespace E_CommerceprojectApi
 {
@@ -23,7 +27,9 @@ namespace E_CommerceprojectApi
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             builder.Services.AddScoped<IDbInitializer, DbInitialize>();
-
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IServicesManager, ServicesManager>();    
+            builder.Services.AddAutoMapper(typeof(Servicies.AssemplyReference).Assembly);
             var app = builder.Build();
             await InitializeDbAsync(app);
             // Configure the HTTP request pipeline.
@@ -32,6 +38,8 @@ namespace E_CommerceprojectApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
