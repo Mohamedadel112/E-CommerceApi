@@ -1,5 +1,6 @@
 ﻿using Domain.Contracts;
 using Domain.Entities;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,26 +18,27 @@ namespace Servicies.Specifications
             AddInclude(p => p.ProductType); 
         }
 
-        public ProductWithBrandAndTypeSpecification(string? sort , int? BrandId , int? Type) 
+        public ProductWithBrandAndTypeSpecification(ProductParametersSpecification parameters) 
             : base(p=>
-            (!BrandId.HasValue || p.BrandId == BrandId.Value)&&
-            (!Type.HasValue || p.TypeId == Type.Value)
-            )
+            (!parameters.BrandId.HasValue || p.BrandId == parameters.BrandId.Value)&&
+            (!parameters.TypeId.HasValue || p.TypeId == parameters.TypeId.Value)&&
+            (string.IsNullOrWhiteSpace(parameters.Search)|| p.Name.ToLower().Contains(parameters.Search.ToLower().Trim())))
+            
         {
             AddInclude(p => p.ProductBrand);
             AddInclude(p => p.ProductType);
 
-            if (!string.IsNullOrEmpty(sort))
+            if (parameters.sort is not null)
             {
-                switch(sort.ToLower().Trim())
+                switch(parameters.sort)
                 {
-                    case "priceAsc":
+                    case SortOptions.PriceAsc:
                         SetOrder(p => p.Price);
                         break;
-                    case "pricedesc":
+                    case SortOptions.PriceDesc:
                         SetOrderdesc(p => p.Price);
                         break; 
-                    case "namedesc":
+                    case SortOptions.NameDesc:
                         SetOrderdesc(p => p.Name);
                         break;
                     default:
@@ -45,6 +47,8 @@ namespace Servicies.Specifications
                 }
 
             }
+
+            ApplyPagienation(parameters.PageIndex, parameters.PageSize);
         }
     }
 }

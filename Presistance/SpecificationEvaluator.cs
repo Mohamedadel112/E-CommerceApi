@@ -26,6 +26,10 @@ namespace Presistance
                 query=query.OrderByDescending(specification.OrderByDesc);
             }
 
+            if (specification.Ispagient)
+            {
+                query = query.Skip(specification.Skip).Take(specification.Take);
+            }
 
                 return query;
         }

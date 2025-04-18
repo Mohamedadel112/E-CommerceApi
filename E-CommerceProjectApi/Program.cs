@@ -1,5 +1,8 @@
 ﻿
 using Domain.Contracts;
+using E_CommerceProjectApi.Factories;
+using E_CommerceProjectApi.MiddleWares;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Presistance.Data;
 using Presistance.Data.DataSeed;
@@ -15,7 +18,7 @@ namespace E_CommerceprojectApi
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Services.AddLogging();
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -26,11 +29,17 @@ namespace E_CommerceprojectApi
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = ApiResponseFactory.GetValidateErrors;
+            });
             builder.Services.AddScoped<IDbInitializer, DbInitialize>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IServicesManager, ServicesManager>();    
             builder.Services.AddAutoMapper(typeof(Servicies.AssemplyReference).Assembly);
             var app = builder.Build();
+            app.UseMiddleware<GlobalErrorHandlingMiddleware>();   
             await InitializeDbAsync(app);
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

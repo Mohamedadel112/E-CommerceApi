@@ -1,10 +1,11 @@
 ﻿using Shared;
+using Shared.DTOs;
 
 namespace Domain.Contracts
 {
     public interface IProductServices
     {
-       public Task <IEnumerable<ProductDTO>>GetAllProductsAsync(string? sort, int? BrandId, int? Type);
+       public Task <IEnumerable<ProductDTO>>GetAllProductsAsync(ProductParametersSpecification parameters);
 
         public Task<ProductDTO> GetProductByIdAsync(int id);
 

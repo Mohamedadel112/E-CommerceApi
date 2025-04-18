@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
+using Domain.Exceptions;
 using Servicies.Specifications;
 using Shared;
+using Shared.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +36,9 @@ namespace Servicies
             return BrandsDTO;
         }
 
-        public async Task<IEnumerable<ProductDTO>> GetAllProductsAsync(string? sort, int? BrandId, int? Type)
+        public async Task<IEnumerable<ProductDTO>> GetAllProductsAsync(ProductParametersSpecification parameters)
         {
-            var Products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecification(sort, BrandId, Type));
+            var Products = await _unitOfWork.GetRepository<Product, int>().GetAllAsync(new ProductWithBrandAndTypeSpecification(parameters));
             var ProductsDTO = _mapper.Map<IEnumerable<ProductDTO>>(Products);
             return ProductsDTO;
         }
@@ -51,8 +53,8 @@ namespace Servicies
         public async Task<ProductDTO> GetProductByIdAsync(int id)
         {
             var Product = await _unitOfWork.GetRepository<Product, int>().GetByIdAsync(new ProductWithBrandAndTypeSpecification(id));
-            var ProductDTO = _mapper.Map<ProductDTO>(Product);
-            return ProductDTO;
+            //var ProductDTO = _mapper.Map<ProductDTO>(Product);
+            return Product is null ? throw new ProductNotFoundException(id) : _mapper.Map<ProductDTO>(Product);
         }
     }
 }

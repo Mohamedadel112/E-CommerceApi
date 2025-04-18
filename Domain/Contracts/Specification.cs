@@ -13,8 +13,9 @@ namespace Domain.Contracts
         public List<Expression<Func<T, object>>> IncludeExpression { get; } = new();
         public Expression<Func<T, object>> OrderBy { get; private set; }
         public Expression<Func<T, object>> OrderByDesc { get; private set; }
-
-
+        public int Take { get;private set; }
+        public int Skip { get;private set; }
+        public bool Ispagient { get; set; }
         protected Specification(Expression<Func<T, bool>>? criteria)
         {
             this.Criteria = criteria;
@@ -33,6 +34,12 @@ namespace Domain.Contracts
             OrderByDesc = expression;
         }
 
+        protected void ApplyPagienation(int Pageindex , int Pagesize)
+        {
+            Ispagient = true;
+            Take = Pagesize;
+            Skip = (Pageindex-1)*Pagesize;
+        }
 
     }
 }
