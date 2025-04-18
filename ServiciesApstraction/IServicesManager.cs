@@ -10,5 +10,6 @@ namespace ServiciesApstraction
     public interface IServicesManager
     {
         public IProductServices ProductServices { get; }
+        public IBasketService BasketServices { get; }
     }
 }

@@ -2,9 +2,11 @@
 using ServiciesApstraction;
 using Shared;
 using Shared.DTOs;
+using Shared.ErrorsModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,15 +46,17 @@ namespace Presentation.Controllers.Product
 
 
 
-
+        [ProducesResponseType(typeof(ErrorsDetails),(int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ErrorsDetails),(int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ValidationErrorsResponse),(int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ProductDTO),(int)HttpStatusCode.OK)]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> GetAllProductById(int id)
         {
             if(id > 0)
             {
-
-            var Product = await servicesManager.ProductServices.GetProductByIdAsync(id);
-            return Ok(Product);
+                var Product = await servicesManager.ProductServices.GetProductByIdAsync(id);
+                return Ok(Product);
             }
             else 
                 return NotFound();

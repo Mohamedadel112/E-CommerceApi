@@ -1,5 +1,6 @@
 ﻿
 using Domain.Contracts;
+using E_CommerceProjectApi.Extentions;
 using E_CommerceProjectApi.Factories;
 using E_CommerceProjectApi.MiddleWares;
 using Microsoft.AspNetCore.Mvc;
@@ -18,62 +19,39 @@ namespace E_CommerceprojectApi
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            #region Services
             builder.Services.AddLogging();
-            // Add services to the container.
+            // Presentation services .      
+            builder.Services.AddPresentationServices();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
+            // Infrastructure services
+            builder.Services.AddInfraStructureServices(builder.Configuration);
 
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = ApiResponseFactory.GetValidateErrors;
-            });
-            builder.Services.AddScoped<IDbInitializer, DbInitialize>();
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IServicesManager, ServicesManager>();    
-            builder.Services.AddAutoMapper(typeof(Servicies.AssemplyReference).Assembly);
+            // Core Services
+            builder.Services.AddCoreServices();
+
             var app = builder.Build();
-            app.UseMiddleware<GlobalErrorHandlingMiddleware>();   
-            await InitializeDbAsync(app);
+
+            #endregion
+
+            #region Pipeline/Middlewares
+            app.UseMiddleware();
+            await app.UseInitializeSeedDbAsync();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+              app.UseSwaggerMiddleware();
             }
 
             app.UseStaticFiles();
-
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
 
-            async Task InitializeDbAsync(WebApplication web)
-            {
-                using var scope = web.Services.CreateScope();
-                try
-                {
-                    var initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
-                    await initializer.InitializeAsync();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("🔥 Error in DB Initialization: " + ex.Message);
-                    Console.WriteLine("🧠 StackTrace: " + ex.StackTrace);
-                    // يمكنك أيضًا عمل Log هنا أو إعادة رمي الاستثناء
-                }
-            }
+            #endregion
         }
     }
 }
