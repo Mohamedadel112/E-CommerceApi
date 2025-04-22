@@ -29,7 +29,7 @@ namespace E_CommerceprojectApi
             builder.Services.AddInfraStructureServices(builder.Configuration);
 
             // Core Services
-            builder.Services.AddCoreServices();
+            builder.Services.AddCoreServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -46,6 +46,7 @@ namespace E_CommerceprojectApi
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 

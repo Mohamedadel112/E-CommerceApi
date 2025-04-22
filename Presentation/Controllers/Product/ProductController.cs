@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServiciesApstraction;
 using Shared;
 using Shared.DTOs;
@@ -12,9 +13,8 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers.Product
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductController(IServicesManager servicesManager) : ControllerBase
+    [Authorize]
+    public class ProductController(IServicesManager servicesManager) : ApiController
     {
 
 
@@ -46,10 +46,7 @@ namespace Presentation.Controllers.Product
 
 
 
-        [ProducesResponseType(typeof(ErrorsDetails),(int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(ErrorsDetails),(int)HttpStatusCode.InternalServerError)]
-        [ProducesResponseType(typeof(ValidationErrorsResponse),(int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(ProductDTO),(int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ProductDTO), (int)HttpStatusCode.OK)]
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> GetAllProductById(int id)
         {

@@ -11,5 +11,6 @@ namespace ServiciesApstraction
     {
         public IProductServices ProductServices { get; }
         public IBasketService BasketServices { get; }
+        public IAuthenticationService AuthenticationService { get; }
     }
 }

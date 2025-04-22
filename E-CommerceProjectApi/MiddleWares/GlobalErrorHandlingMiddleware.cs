@@ -1,7 +1,10 @@
 ﻿using Domain.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Shared.ErrorsModel;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
+using ValidationException = Domain.Exceptions.ValidationException;
 
 namespace E_CommerceProjectApi.MiddleWares
 {
@@ -56,21 +59,30 @@ namespace E_CommerceProjectApi.MiddleWares
             httpContext.Response.ContentType = "application/json";
             httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            httpContext.Response.StatusCode = ex switch
+            var response = new ErrorsDetails()
             {
-                NotFoundException => (int)HttpStatusCode.NotFound,
-                _ => (int)HttpStatusCode.InternalServerError,
+                MsgError = ex.Message,
+
             };
 
-            var response = new ErrorsDetails() 
-            { 
-                StatusCode  =httpContext.Response.StatusCode,   
-                MsgError = ex.Message,
-            
-            }.ToString();
-            
-            await httpContext.Response.WriteAsync(response);
+            httpContext.Response.StatusCode = ex switch
+            {
+                NotFoundException => (int)HttpStatusCode.NotFound, //404
+                UserUnAuthorizeException => (int)HttpStatusCode.Unauthorized,//401
+               ValidationException validationException => HandeleValidationException(validationException, response),
+                _ => (int)HttpStatusCode.InternalServerError, //500
 
+            };
+            response.StatusCode = httpContext.Response.StatusCode;
+
+            
+            await httpContext.Response.WriteAsync(response.ToString());
+        }
+
+        private int HandeleValidationException(ValidationException validationException, ErrorsDetails? response)
+        {
+            response.Errors= validationException.Errors;
+            return (int)HttpStatusCode.BadRequest;
         }
     }
 }

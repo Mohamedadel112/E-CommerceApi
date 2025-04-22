@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServiciesApstraction;
 using Shared.DTOs;
 
 
 namespace Presentation.Controllers.Basket
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BasketController(IServicesManager servicesManager) : ControllerBase
+    [Authorize]
+    public class BasketController(IServicesManager servicesManager) : ApiController
     {
         [HttpGet("{id}")]
         public async Task<ActionResult<BasketDTO>> GetBasket(string id)

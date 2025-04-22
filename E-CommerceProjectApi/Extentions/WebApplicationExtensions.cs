@@ -12,6 +12,7 @@ namespace E_CommerceProjectApi.Extentions
             {
                 var initializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 await initializer.InitializeAsync();
+                await initializer.InitializeIdentityAsync();
             }
             catch (Exception ex)
             {
