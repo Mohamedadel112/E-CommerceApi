@@ -16,18 +16,12 @@ namespace Presentation.Controllers.Basket
             return Ok(basket);
 
         }
-
-
-
         [HttpPost]
         public async Task<ActionResult<BasketDTO>> CreateBasket(BasketDTO basket)
         {
             var basketcreated = await servicesManager.BasketServices.CreateBasketAsync(basket);
             return Ok(basketcreated);
         }
-
-
-
 
         [HttpDelete]
         public async Task<ActionResult> DeleteBasket(string id)

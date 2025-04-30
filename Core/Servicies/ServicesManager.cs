@@ -18,6 +18,7 @@ namespace Servicies
         private readonly Lazy<IProductServices> _productServices;
         private readonly Lazy<IBasketService> _basketServices;
         private readonly Lazy<IAuthenticationService> _authentication;
+        private readonly Lazy<IOrderServices> _orderservice;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         public ServicesManager(IUnitOfWork unitOfWork, IMapper mapper , IBasketRepo basketRepo,UserManager<User> user,IOptions<JwtOptions> options)
@@ -26,7 +27,8 @@ namespace Servicies
             _mapper = mapper;
             _productServices = new Lazy<IProductServices>(() => new ProductServices(_unitOfWork, _mapper));
             _basketServices = new Lazy<IBasketService>(() => new BasketService(basketRepo, _mapper));
-            _authentication = new Lazy<IAuthenticationService>(()=>new AuthenticationService(user,options));
+            _authentication = new Lazy<IAuthenticationService>(()=>new AuthenticationService(user,mapper,options));
+            _orderservice = new Lazy<IOrderServices>(() => new OrderServices(mapper, basketRepo, unitOfWork));
         }
 
         public IProductServices ProductServices => _productServices.Value;
@@ -34,5 +36,9 @@ namespace Servicies
         public IBasketService BasketServices => _basketServices.Value;
 
         public IAuthenticationService AuthenticationService => _authentication.Value;
+
+        public IOrderServices MyProperty => _orderservice.Value;
+
+        public IOrderServices OrderServices => _orderservice.Value;
     }
 }

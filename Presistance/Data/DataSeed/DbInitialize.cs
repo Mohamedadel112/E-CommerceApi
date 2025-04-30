@@ -1,5 +1,6 @@
 ﻿
 
+using Domain.Entities.OrderEntity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Presistance.Data.DataSeed
@@ -24,8 +25,8 @@ namespace Presistance.Data.DataSeed
             {
 
 
-                if (_dbContext.Database.GetPendingMigrations().Any())
-                {
+                //if (_dbContext.Database.GetPendingMigrations().Any())
+                //{
 
                     await _dbContext.Database.MigrateAsync();
 
@@ -66,9 +67,19 @@ namespace Presistance.Data.DataSeed
                             await _dbContext.SaveChangesAsync();
                         }
                     }
+                    if (!_dbContext.DeliveryMethods.Any())
+                    {
+                        //E:\Asp.net route\My Tasks\E-Commerce\infrastruction\Presistance\Data\DataSeed\Delivery.json
+                        var DeliveryFile = await File.ReadAllTextAsync(@"..\Presistance\Data\DataSeed\Delivery.json");
+                        var types = JsonSerializer.Deserialize<List<DeliveryMethods>>(DeliveryFile);
+                        if (types is not null && types.Any())
+                        {
+                            await _dbContext.AddRangeAsync(types);
+                            await _dbContext.SaveChangesAsync();
+                        }
+                    }
 
-
-                }
+                //}
             }
             catch (Exception ex)
             {

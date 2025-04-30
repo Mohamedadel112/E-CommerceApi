@@ -11,5 +11,9 @@ namespace ServiciesApstraction
     {
         public Task<UserDTO> Login(LoginDTO logindto);
         public Task<UserDTO> Register(RegisterDTO registerdto);
+        public Task<UserDTO> GetUserByEmail(string email);
+        public Task<bool> CheckIfEmailExist(string email);
+        public Task<AddressDTO> UpdateAddress(AddressDTO address, string email);
+        public Task<AddressDTO> GetAddressByEmail(string email);
     }
 }
