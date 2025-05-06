@@ -9,13 +9,15 @@ namespace Domain.Entities.OrderEntity
             ShippingAddr shippingAddress,  
             ICollection<OrderItem> orderItems,  
             DeliveryMethods deliveryMethod,
-            decimal supTotal)
+            decimal supTotal,
+            string paymentIntentId )
         {
             UserEmail = userEmail;
             ShippingAddress = shippingAddress;
             OrderItems = orderItems;
             DeliveryMethod = deliveryMethod;
             SupTotal = supTotal;
+            PaymentintentId = paymentIntentId;
         }
         public Order()
         {
@@ -33,7 +35,7 @@ namespace Domain.Entities.OrderEntity
 
         public decimal SupTotal { get; set; } // Price of Orderitem * Quantity // Total = Subtotal + Shipping 
 
-        public string PaymentintentId { get; set; } = string.Empty;
+        public string PaymentintentId { get; set; } 
 
     }
 }

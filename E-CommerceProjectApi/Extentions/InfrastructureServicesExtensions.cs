@@ -24,6 +24,7 @@ namespace E_CommerceProjectApi.Extentions
             {
                 options.UseSqlServer(configuration.GetConnectionString("IdentityDefaultConnection"));
             });
+
             services.AddIdentity<User, IdentityRole>(options =>
             {
 
@@ -33,6 +34,8 @@ namespace E_CommerceProjectApi.Extentions
                 options.Password.RequireNonAlphanumeric = true;
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<IdentityAppDbcontext>();
+
+
             services.AddScoped<IDbInitializer, DbInitialize>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSingleton<IConnectionMultiplexer>(option => 

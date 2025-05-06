@@ -11,7 +11,7 @@ namespace Servicies.Mapping_Profile
         public OrderProfile()
         {
             CreateMap<Shiping, AddressDTO>().ReverseMap();
-            CreateMap<DeliveryMethods, DeliveryMethodRequestDTO>();
+            CreateMap<DeliveryMethods, DeliveryMethodRequestDTO>().ForMember(des=>des.Cost,options=>options.MapFrom(src=>src.Price));
             CreateMap<Domain.Entities.Address, AddressDTO>().ReverseMap();
             CreateMap<OrderItem, OrderItemsDTO>()
                 .ForMember(des => des.ProductId, op => op.MapFrom(src => src.Product.ProductId))

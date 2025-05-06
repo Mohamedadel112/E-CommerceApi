@@ -9,7 +9,7 @@ namespace Presentation.Controllers.Basket
     [Authorize]
     public class BasketController(IServicesManager servicesManager) : ApiController
     {
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<ActionResult<BasketDTO>> GetBasket(string id)
         {
           var basket= await  servicesManager.BasketServices.GetBasketAsync(id);

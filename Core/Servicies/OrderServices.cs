@@ -20,7 +20,7 @@ namespace Servicies
         public async Task<OrderResultDTO> CreateOrderAsync(OrderRequestDTO request, string UserEmail)
         {
             // Get Address 
-            var ShipingAddress = mapper.Map<Address>(request.ShippingAddress);
+            var ShipingAddress = mapper.Map<Address>(request.shipToAddress);
 
             // OrderItems => Basket [Basket id] => BasketItem => orderItems
 
@@ -45,9 +45,15 @@ namespace Servicies
 
             // Create Order
 
-            Order order = new(UserEmail, ShipingAddress, Orderitems, delivery,Subtotal);
+            Order order = new(UserEmail, ShipingAddress, Orderitems, delivery,Subtotal,basket.PaymentIntentId);
+            var OrderRepo = unitOfWork.GetRepository<Order, Guid>();
 
-            await unitOfWork.GetRepository<Order, Guid>().AddAsync(order);
+            await OrderRepo.AddAsync(order);
+            var ExistingOrder = await OrderRepo.GetByIdAsync(new OrderWithPaymentIntentIdSpecification(basket.PaymentIntentId));
+            if(ExistingOrder != null)
+            {
+                OrderRepo.DeleteAsync(ExistingOrder);
+            }
             await  unitOfWork.SaveChangesAsync();
             return mapper.Map<OrderResultDTO>(order);
 

@@ -9,7 +9,7 @@ namespace Shared.DTOs
     public record OrderRequestDTO
     {
         public string BasketId { get; init; }
-        public AddressDTO ShippingAddress { get; init; }
+        public AddressDTO shipToAddress { get; init; }
         public int DeliveryMethodId { get; init; }
     }
 }

@@ -9,6 +9,15 @@ namespace E_CommerceProjectApi.Extentions
     {
         public static IServiceCollection AddPresentationServices(this IServiceCollection services)
         {
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CORSPolisy", builder =>
+                {
+                    builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
+                });
+            });
+
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();

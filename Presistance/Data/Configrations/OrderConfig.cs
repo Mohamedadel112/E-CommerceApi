@@ -12,7 +12,7 @@ namespace Presistance.Data.Configrations
         public void Configure(EntityTypeBuilder<Order> builder)
         {
             builder.OwnsOne(o => o.ShippingAddress, s => s.WithOwner());
-            builder.HasMany(o => o.OrderItems).WithOne();
+            builder.HasMany(o => o.OrderItems).WithOne().OnDelete(DeleteBehavior.Cascade);
             builder.Property(o => o.OrderPaymentStatus).HasConversion(op => op.ToString(), s => Enum.Parse<OrderPaymentStatus>(s));
             builder.HasOne(o => o.DeliveryMethod).WithMany().OnDelete(DeleteBehavior.SetNull);
             builder.Property(o => o.SupTotal).HasColumnType("decimal(18,3)");

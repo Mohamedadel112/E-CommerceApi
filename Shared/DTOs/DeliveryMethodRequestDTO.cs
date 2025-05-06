@@ -12,6 +12,6 @@ namespace Shared.DTOs
         public string? Shortname { get; init; }
         public string Description { get; init; }
         public string DeliveryTime { get; init; }
-        public decimal Price { get; init; }
+        public decimal Cost { get; init; }
     }
 }

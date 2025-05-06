@@ -222,7 +222,8 @@ namespace Presistance.Migrations
                 {
                     b.HasOne("Domain.Entities.OrderEntity.Order", null)
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.OwnsOne("Domain.Entities.OrderEntity.ProductInOrder", "Product", b1 =>
                         {
