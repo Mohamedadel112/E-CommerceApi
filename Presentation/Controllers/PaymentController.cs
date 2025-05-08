@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace Presentation.Controllers
 {
+
+    
     public class PaymentController(IServicesManager servicesManager) : ApiController
     {
         [HttpPost("{basketId}")]
@@ -18,7 +20,13 @@ namespace Presentation.Controllers
             return Ok(result);
         }
 
-
+        public async Task<ActionResult> WebHock()
+        {
+            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            var StripeHeader = Request.Headers["Stripe-Signature"];
+            await servicesManager.PaymentServices.UpdatePaymentStatus(json, StripeHeader);
+            return new EmptyResult();
+        }
 
 
 

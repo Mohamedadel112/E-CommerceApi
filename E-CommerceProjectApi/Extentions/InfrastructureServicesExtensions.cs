@@ -35,7 +35,7 @@ namespace E_CommerceProjectApi.Extentions
                 options.User.RequireUniqueEmail = true;
             }).AddEntityFrameworkStores<IdentityAppDbcontext>();
 
-
+            services.AddScoped<ICacheReepo, CacheRepo>();
             services.AddScoped<IDbInitializer, DbInitialize>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddSingleton<IConnectionMultiplexer>(option => 

@@ -3,6 +3,7 @@ using Domain.Contracts;
 using Domain.Entities.OrderEntity;
 using Domain.Exceptions;
 using Microsoft.Extensions.Configuration;
+using Servicies.Specifications;
 using ServiciesApstraction;
 using Shared.DTOs;
 using Stripe;
@@ -81,9 +82,48 @@ namespace Servicies
 
 
 
-
-
-
         }
+
+        public async Task UpdatePaymentStatus(string request, string stripeHeaders)
+        {
+            var endPointSecret = configuration.GetSection("StripeSettings")["EndPointSecret"];
+            var stripeEvent = EventUtility.ConstructEvent(request,
+                stripeHeaders, endPointSecret, throwOnApiVersionMismatch: false);
+
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+
+            if (stripeEvent.Type == EventTypes.PaymentIntentSucceeded)
+            {
+                await UpdatePaymentStatusSucceeded(paymentIntent.Id);
+            }
+            else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
+            {
+                await UpdatePaymentStatusFailed(paymentIntent.Id);
+            }
+            else
+            {
+                Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
+            }
+        }
+
+        private async Task UpdatePaymentStatusFailed(string paymentIntentId)
+        {
+            var orderRepo = unitOfWork.GetRepository<Order, Guid>();
+            var order = await orderRepo.GetByIdAsync(new OrderWithPaymentIntentIdSpecification(paymentIntentId));
+            order.OrderPaymentStatus = OrderPaymentStatus.paymentFailed;
+            orderRepo.UpdateAsync(order);
+            await unitOfWork.SaveChangesAsync();
+        }
+
+        private async Task UpdatePaymentStatusSucceeded(string paymentIntentId)
+        {
+            var orderRepo = unitOfWork.GetRepository<Order, Guid>();
+            var order = await orderRepo.GetByIdAsync(new OrderWithPaymentIntentIdSpecification(paymentIntentId));
+            order.OrderPaymentStatus = OrderPaymentStatus.paymentRecieved;
+            orderRepo.UpdateAsync(order);
+            await unitOfWork.SaveChangesAsync();
+        }
+
+
     }
 }

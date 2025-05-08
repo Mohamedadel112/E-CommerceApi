@@ -10,7 +10,7 @@ namespace Shared.DTOs
     public record BasketItemDTO
     {
         public int Id { get; init; }
-        public string Name { get; init; }
+        public string ProductName { get; init; }
         [Range(1,double.MaxValue)]
         public decimal Price { get; init; }
         [Range(1, 100)]

@@ -17,7 +17,7 @@ namespace Presentation.Controllers.Product
     public class ProductController(IServicesManager servicesManager) : ApiController
     {
 
-
+        [RedisCache]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAllProducts([FromQuery]ProductParametersSpecification parameters)
         {
