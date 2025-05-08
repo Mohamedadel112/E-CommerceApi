@@ -1,0 +1,47 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<UserVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>All Users</h1>
+<hr />
+
+<!-- عرض الأدوار -->
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(u => u.Username)</th>
+                <th>@Html.DisplayNameFor(u => u.DisplayName)</th>
+                <th>@Html.DisplayNameFor(u => u.Email)</th>
+                <th>@Html.DisplayNameFor(u => u.phonenumber)</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Username</td>
+                    <td>@user.DisplayName</td>
+                    <td>@user.Email</td>
+                    <td>@user.phonenumber</td>
+                    <td>@string.Join(',',user.roles.ToList())</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-outline-warning">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">
+        No Users found.
+    </div>
+}

@@ -1,36 +1,59 @@
+﻿
+using Domain.Contracts;
+using E_CommerceProjectApi.Extentions;
+using E_CommerceProjectApi.Factories;
+using E_CommerceProjectApi.MiddleWares;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Presistance.Data;
+using Presistance.Data.DataSeed;
+using Presistance.Data.Repositories;
+using Servicies;
+using Servicies.Mapping_Profile;
+using ServiciesApstraction;
 
-namespace E_CommerceProjectApi
+namespace E_CommerceprojectApi
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            #region Services
+            builder.Services.AddLogging();
+            // Presentation services .      
+            builder.Services.AddPresentationServices();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            // Infrastructure services
+            builder.Services.AddInfraStructureServices(builder.Configuration);
+
+            // Core Services
+            builder.Services.AddCoreServices(builder.Configuration);
 
             var app = builder.Build();
 
+            #endregion
+
+            #region Pipeline/Middlewares
+            app.UseMiddleware();
+            await app.UseInitializeSeedDbAsync();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+              app.UseSwaggerMiddleware();
             }
 
+            app.UseStaticFiles();
+            app.UseCors("CORSPolisy");
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();
+
+            #endregion
         }
     }
 }
